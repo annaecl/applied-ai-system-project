@@ -29,6 +29,30 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
+- My design will calculate a score between 0 and 1 for each song, where 0 indicates that the song does not align at all with the user's tastes (ie. target_energy, favorite_mood, etc), and where 1 is a perfect match. I plan to calculate the score using the following formula: 
+```
+total_score = (w1 × proximity(energy)
+             + w2 × proximity(acousticness)
+             + w3 × proximity(valence)
+             + w4 × proximity(tempo_normalized)
+             + w5 × mood_match          ← 1.0 if match, 0.0 if not
+             ) / (w1 + w2 + w3 + w4 + w5)
+
+WEIGHTS = {
+    "energy":       0.35,   # strongest discriminator in this dataset
+    "acousticness": 0.25,   # captures organic vs electronic texture
+    "valence":      0.20,   # emotional tone
+    "tempo":        0.10,   # rhythm feel (normalized: tempo_bpm / 200)
+    "mood":         0.10,   # categorical bonus
+}
+```
+- Each song stores identifying information (id, title, artist), categorical descriptors (genre, mood), and five numeric audio features (energy, tempo_bpm, valence, danceability, acousticness) that together capture what a song sounds like and feels like.
+- Songs will then be ordered based on their score, with songs with scores closer to 1 to be the first to be recommended to the user 
+- The UserProfile stores four pieces of information about a user's music taste. 
+  - It records the user's favorite_genre and favorite_mood as strings, which capture categorical preferences like preferring "lofi" or "jazz" and moods like "chill" or "focused." 
+  - It also stores target_energy as a float between 0 and 1, representing the energy level the user gravitates toward (closer to 0 for mellow listening and closer to 1 for high-intensity music). 
+  - Finally, likes_acoustic is a boolean that indicates whether the user prefers acoustic, organic-sounding songs over electronic or produced ones.
+
 ---
 
 ## Getting Started

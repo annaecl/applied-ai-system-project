@@ -126,6 +126,15 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Experiments You Tried
 
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-5.png)
+![edge case 1](image-4.png)
+![edge case 2](image-6.png)
+![edge case 3](image-7.png)
+![edge case 4](image-8.png)
+![edge case 5](image-9.png)
+
 Use this section to document the experiments you ran. For example:
 
 - What happened when you changed the weight on genre from 2.0 to 0.5

@@ -17,3 +17,85 @@ id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
 16,Porch Song,Clara Wren,folk,sad,0.30,66,0.28,0.40,0.93
 17,Current State,Bassform,electronic,energetic,0.88,140,0.65,0.94,0.04
 18,Rain on Glass,Hollow Tide,blues,melancholic,0.45,74,0.33,0.48,0.81
+19,Dancing in Neon,Prism Beat,pop,happy,0.88,126,0.91,0.85,0.12
+20,Summer Static,Coastal Line,pop,energetic,0.80,134,0.76,0.82,0.20
+21,Velvet Crush,Stella Vox,pop,romantic,0.65,108,0.82,0.74,0.38
+22,Heartbeats,Echo Shore,pop,moody,0.70,116,0.52,0.78,0.25
+23,Rainy Afternoon,LoRoom,lofi,relaxed,0.30,70,0.62,0.52,0.82
+24,Warm Light,Paper Lanterns,lofi,nostalgic,0.38,75,0.58,0.55,0.79
+25,Soft Hours,Dusk Tape,lofi,chill,0.32,68,0.65,0.48,0.88
+26,Concrete Wings,Voltline,rock,energetic,0.85,142,0.55,0.62,0.12
+27,Dark Signal,Iron Circuit,rock,moody,0.78,128,0.35,0.58,0.08
+28,Aftershock,Red Fault,rock,angry,0.94,162,0.28,0.54,0.06
+29,Blue Collar Anthem,Working Crew,rock,intense,0.82,136,0.48,0.65,0.15
+30,Friction,Static Nerve,rock,focused,0.75,118,0.42,0.60,0.18
+31,Lunar Drift,Orbit Bloom,ambient,relaxed,0.18,62,0.70,0.25,0.94
+32,Mountain Haze,Still Water,ambient,chill,0.22,58,0.68,0.28,0.96
+33,Glass Cathedral,Pale Vessel,ambient,melancholic,0.15,56,0.38,0.22,0.92
+34,Tidal Field,Shoreline Echo,ambient,focused,0.30,72,0.62,0.35,0.88
+35,Breath of Morning,Soft Circuit,ambient,happy,0.25,65,0.75,0.30,0.90
+36,Midnight Keys,Slow Stereo,jazz,romantic,0.42,88,0.76,0.58,0.88
+37,Blue Smoke,Quarter Note,jazz,melancholic,0.38,82,0.44,0.50,0.91
+38,City Rain,Chord Collective,jazz,chill,0.45,92,0.66,0.62,0.84
+39,Late Session,Five Keys,jazz,relaxed,0.52,98,0.72,0.68,0.80
+40,Brass Summer,The Wren Quartet,jazz,happy,0.60,116,0.80,0.72,0.76
+41,Chrome Horizon,Neon Echo,synthwave,energetic,0.82,128,0.65,0.85,0.08
+42,Retro Signal,Volt City,synthwave,nostalgic,0.78,120,0.72,0.80,0.12
+43,Digital Rain,Binary Pulse,synthwave,moody,0.70,108,0.44,0.76,0.10
+44,Grid Rush,Crystal Drive,synthwave,intense,0.88,134,0.58,0.88,0.06
+45,Neon Arcade,Pixel Drift,synthwave,happy,0.85,126,0.78,0.86,0.09
+46,Paper Town,Indigo Parade,indie pop,nostalgic,0.62,112,0.70,0.72,0.42
+47,Yellow Cardigan,Soft Shore,indie pop,happy,0.68,118,0.84,0.78,0.38
+48,Hollow Summer,Glass Twins,indie pop,melancholic,0.58,104,0.48,0.64,0.48
+49,Fade Lines,Two Mornings,indie pop,moody,0.64,110,0.56,0.68,0.40
+50,Dusk Sonata,Pale Vessel,classical,romantic,0.32,76,0.68,0.28,0.96
+51,Wintersong,The Chamber Players,classical,melancholic,0.18,56,0.24,0.16,0.98
+52,Spring Allegro,Clara Wren,classical,happy,0.52,112,0.75,0.45,0.95
+53,Nocturne in E Minor,Ivory Keys,classical,sad,0.22,62,0.22,0.18,0.97
+54,Crown Up,Street Axiom,hip-hop,energetic,0.88,98,0.78,0.90,0.06
+55,Grid Talk,West Side Signal,hip-hop,focused,0.72,88,0.62,0.82,0.10
+56,Low Rider,Smooth Current,hip-hop,chill,0.66,82,0.70,0.80,0.18
+57,Trophy Room,Gold Chain,hip-hop,happy,0.84,104,0.82,0.88,0.08
+58,Night Moves,Dark Circuit,hip-hop,moody,0.78,92,0.44,0.85,0.12
+59,Highway at Dawn,Dusty Pines,country,nostalgic,0.62,112,0.72,0.70,0.78
+60,Old Front Porch,River Creek,country,relaxed,0.44,92,0.68,0.60,0.86
+61,Boot Scootin Blues,Lone Star Road,country,happy,0.72,124,0.80,0.78,0.62
+62,Letting Go,Sundown Grace,country,sad,0.42,88,0.38,0.52,0.82
+63,Velvet Kiss,Luna Solis,r&b,romantic,0.65,92,0.86,0.76,0.45
+64,Slow Burn,Satin Wave,r&b,moody,0.58,84,0.55,0.72,0.38
+65,Golden Touch,Smooth Current,r&b,happy,0.75,108,0.88,0.84,0.30
+66,Midnight River,Deep Harmony,r&b,relaxed,0.54,88,0.75,0.70,0.52
+67,Void March,Iron Veil,metal,angry,0.96,185,0.14,0.52,0.03
+68,Black Mountain,Death Circuit,metal,intense,0.98,192,0.18,0.45,0.02
+69,War Machine,Grind Zero,metal,angry,0.99,198,0.10,0.42,0.02
+70,Collapse,Blind Tide,metal,moody,0.92,158,0.22,0.55,0.05
+71,Campfire Songs,Clara Wren,folk,nostalgic,0.38,88,0.65,0.52,0.90
+72,Harvest Moon,Willowbrook,folk,romantic,0.32,78,0.70,0.44,0.94
+73,Wandering Road,Open Field,folk,melancholic,0.28,72,0.38,0.40,0.92
+74,Morning Meadow,Cedar Line,folk,happy,0.48,102,0.72,0.58,0.85
+75,Pulse Drive,Bassform,electronic,energetic,0.92,148,0.70,0.94,0.04
+76,Static Summer,Grid Wave,electronic,happy,0.86,138,0.80,0.90,0.06
+77,Deep Scan,Binary Pulse,electronic,focused,0.80,128,0.58,0.86,0.05
+78,Rave Circuit,Neon Core,electronic,intense,0.95,152,0.65,0.96,0.03
+79,Dark Matter,Void Sync,electronic,moody,0.82,132,0.40,0.88,0.04
+80,Crossroads Lament,Hollow Tide,blues,sad,0.42,76,0.30,0.48,0.86
+81,Smoky Bar,Deep Root,blues,melancholic,0.52,88,0.40,0.58,0.78
+82,Late Night Blues,Old Wire,blues,moody,0.48,80,0.35,0.52,0.82
+83,Delta Road,River Drum,blues,nostalgic,0.60,98,0.50,0.62,0.72
+84,Flashback Summer,Coastal Line,pop,nostalgic,0.72,112,0.68,0.76,0.28
+85,Winter Window,Echo Shore,pop,sad,0.58,100,0.32,0.62,0.35
+86,Slow Dance,Glass Twins,indie pop,romantic,0.60,106,0.78,0.66,0.44
+87,Bedroom Radio,Soft Shore,indie pop,chill,0.52,98,0.66,0.60,0.50
+88,Pressure,Stone Gate,hip-hop,angry,0.90,108,0.38,0.86,0.06
+89,Goodbye Rain,Satin Wave,r&b,sad,0.50,80,0.30,0.58,0.58
+90,Morning Session,Five Keys,jazz,focused,0.48,100,0.64,0.65,0.82
+91,Old Roads,Still Water,ambient,nostalgic,0.20,60,0.62,0.24,0.95
+92,Workshop Hours,Cedar Line,folk,focused,0.42,90,0.55,0.48,0.88
+93,Rodeo Rush,Lone Star Road,country,energetic,0.78,132,0.82,0.82,0.55
+94,Old Circuit,Grid Wave,electronic,nostalgic,0.76,122,0.72,0.84,0.08
+95,Gray Afternoon,Dusk Tape,lofi,sad,0.28,66,0.32,0.44,0.84
+96,Porch Blues,Old Wire,blues,relaxed,0.38,72,0.52,0.44,0.88
+97,Prelude in G,Ivory Keys,classical,focused,0.40,96,0.60,0.35,0.96
+98,Slow Synth,Crystal Drive,synthwave,romantic,0.68,102,0.78,0.72,0.14
+99,Broken Static,Static Nerve,rock,sad,0.72,112,0.28,0.55,0.20
+100,Pure Force,Grind Zero,metal,focused,0.94,172,0.30,0.48,0.04

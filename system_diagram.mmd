@@ -1,0 +1,36 @@
+flowchart TD
+    User(["User\nnatural language query"])
+
+    subgraph AI ["AI Layer — ai_interface.py"]
+        Extract["Gemini Call 1\nPreference Extractor\nextract_preferences()"]
+        Guard["Guardrail Validator\n_validate_and_clamp_preferences()\nclamps ranges · rejects bad output"]
+        Generate["Gemini Call 2\nResponse Generator\ngenerate_recommendation()"]
+        Extract --> Guard
+    end
+
+    subgraph Retrieval ["Retrieval Layer — recommender.py"]
+        Score["Scoring Algorithm\nscore_song()\nweighted proximity formula"]
+        Catalog[("Song Catalog\ndata/songs.csv\n100 songs")]
+        Catalog --> Score
+    end
+
+    subgraph Interface ["Interface — app.py / main.py"]
+        Output["Streamlit UI or CLI\nranked songs · AI response\nextracted preferences panel"]
+    end
+
+    subgraph Testing ["Test Suite — pytest"]
+        UnitTests["Unit Tests\ntest_recommender.py\nscoring logic · sort order · explanations"]
+        AITests["Reliability Tests\ntest_ai_consistency.py\nschema · value ranges · guardrail clamping\nfallback behavior · edge cases"]
+        LiveTest["Live Consistency Test\n--live flag\nreal Gemini API · 3 runs · variance check"]
+        AITests --> LiveTest
+    end
+
+    User -->|"free-text request"| Extract
+    Guard -->|"structured prefs dict\n{genre, mood, energy, tempo, …}"| Score
+    Score -->|"ranked list of\n(song, score, explanation)"| Generate
+    Generate -->|"natural language\nrecommendation"| Output
+    Output --> HumanReads(["User\nreads · evaluates · re-queries"])
+
+    UnitTests -. "validates ranking\nand explanations" .-> Score
+    AITests -. "validates schema\nand guardrails" .-> Guard
+    HumanReads -. "human evaluation\nof response quality" .-> Output

@@ -7,7 +7,7 @@ and explanations.
 
 Usage
 -----
-Run all profiles:
+Run all profiles (original behavior):
     python -m src.main
 
 Run a single profile by name:
@@ -15,11 +15,35 @@ Run a single profile by name:
 
 List available profile names:
     python -m src.main --list
+
+AI mode — single natural language query:
+    python -m src.main --query "something chill to study to"
+
+AI mode — interactive loop:
+    python -m src.main --ai
 """
 
 import argparse
+import logging
+
+from .ai_interface import extract_preferences, generate_recommendation, load_gemini_client
 from .recommender import load_songs, recommend_songs
 
+# ---------------------------------------------------------------------------
+# Logging — INFO to console, DEBUG to file
+# ---------------------------------------------------------------------------
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("recommender.log"),
+    ],
+)
+logging.getLogger().handlers[1].setLevel(logging.DEBUG)
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Profile registry — add new profiles here; they are picked up automatically
@@ -165,6 +189,49 @@ def print_results(profile_name: str, recommendations: list) -> None:
 
 
 # ---------------------------------------------------------------------------
+# AI mode helper
+# ---------------------------------------------------------------------------
+
+def run_ai_mode(query: str, songs: list, client, k: int = 5) -> None:
+    """
+    Run the full RAG pipeline for a single natural-language query.
+
+    Steps:
+      1. Gemini extracts structured preferences from the query
+      2. recommend_songs() retrieves top-k songs (the Retrieval step in RAG)
+      3. Gemini generates a natural-language response using the retrieved songs
+    """
+    print(f'\nProcessing: "{query}"')
+    print("-" * 60)
+
+    try:
+        prefs = extract_preferences(query, client)
+        print(
+            f"Extracted: genre={prefs['favorite_genre']}, "
+            f"mood={prefs['favorite_mood']}, "
+            f"energy={prefs['target_energy']:.2f}"
+        )
+    except ValueError as e:
+        print(f"Error extracting preferences: {e}")
+        logger.error("Preference extraction failed: %s", e)
+        return
+
+    retrieved = recommend_songs(prefs, songs, k=k)
+    print(f"Retrieved {len(retrieved)} songs via scoring algorithm.")
+
+    try:
+        response = generate_recommendation(query, retrieved, client)
+        print("\nRecommendation:")
+        print("=" * 60)
+        print(response)
+        print("=" * 60)
+    except Exception as e:
+        logger.error("Recommendation generation failed: %s", e)
+        print("(AI generation failed — showing scored results instead)")
+        print_results("Fallback", retrieved)
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
@@ -182,6 +249,23 @@ def main() -> None:
         action="store_true",
         help="List all available profile names and exit.",
     )
+    parser.add_argument(
+        "--ai",
+        action="store_true",
+        help="Interactive AI mode: enter natural language queries.",
+    )
+    parser.add_argument(
+        "--query",
+        metavar="TEXT",
+        help='Single natural language query for AI mode (e.g. "chill music to study to").',
+    )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=5,
+        metavar="K",
+        help="Number of songs to retrieve in AI mode (default: 5).",
+    )
     args = parser.parse_args()
 
     if args.list:
@@ -190,7 +274,41 @@ def main() -> None:
             print(f"  • {name}")
         return
 
+    # --- AI mode ---
+    if args.ai or args.query:
+        client = load_gemini_client()
+        if client is None:
+            print("ERROR: GOOGLE_API_KEY not set.")
+            print("Add it to a .env file in the project root:")
+            print("  GOOGLE_API_KEY=your-key-here")
+            return
+
+        songs = load_songs("data/songs.csv")
+        logger.info("Loaded %d songs from catalog.", len(songs))
+        print(f"Loaded {len(songs)} songs.")
+
+        if args.query:
+            run_ai_mode(args.query, songs, client, k=args.top_k)
+        else:
+            print("AI Music Recommender — type your request, or 'quit' to exit.")
+            while True:
+                try:
+                    query = input("\nWhat are you in the mood for? ").strip()
+                except (EOFError, KeyboardInterrupt):
+                    print("\nGoodbye!")
+                    break
+                if query.lower() in ("quit", "exit", "q"):
+                    print("Goodbye!")
+                    break
+                if not query:
+                    print("Please enter a request.")
+                    continue
+                run_ai_mode(query, songs, client, k=args.top_k)
+        return
+
+    # --- Profile mode (original behavior) ---
     songs = load_songs("data/songs.csv")
+    logger.info("Loaded %d songs from catalog.", len(songs))
     print(f"Loaded {len(songs)} songs.")
 
     if args.profile:

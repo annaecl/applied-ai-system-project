@@ -1,5 +1,6 @@
 flowchart TD
-    User(["User\nnatural language query"])
+    UserNL(["User\nnatural language query\n--query / --ai"])
+    UserProfile(["User\nstructured profile\n--profile / default"])
 
     subgraph AI ["AI Layer — ai_interface.py"]
         Extract["Gemini Call 1\nPreference Extractor\nextract_preferences()"]
@@ -25,9 +26,11 @@ flowchart TD
         AITests --> LiveTest
     end
 
-    User -->|"free-text request"| Extract
+    UserNL -->|"free-text request"| Extract
+    UserProfile -->|"structured prefs dict\n{genre, mood, energy, tempo, …}"| Score
     Guard -->|"structured prefs dict\n{genre, mood, energy, tempo, …}"| Score
-    Score -->|"ranked list of\n(song, score, explanation)"| Generate
+    Score -->|"ranked list · AI mode"| Generate
+    Score -->|"ranked results · profile mode"| Output
     Generate -->|"natural language\nrecommendation"| Output
     Output --> HumanReads(["User\nreads · evaluates · re-queries"])
 

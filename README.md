@@ -14,6 +14,8 @@ This project started as **VibeMatcher 1.0**, a rules-based music recommender sim
 
 ## Architecture Overview
 
+> **Diagrams:** The Mermaid source for the system diagram is at [`system_diagram.mmd`](system_diagram.mmd). A rendered image of the full pipeline is at [`final_project_diagram.png`](final_project_diagram.png).
+
 VibeMatcher uses a **Retrieval-Augmented Generation (RAG)** pipeline:
 
 ```

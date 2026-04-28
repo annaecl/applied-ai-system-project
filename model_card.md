@@ -7,7 +7,7 @@ Example: **VibeFinder 1.0**
 
 **Response**
 
-**VibeMatcher 1.0**
+**VibeMatcher 2.0**
 
 ---
 
@@ -23,9 +23,11 @@ Prompts:
 
 **Response**
 
-VibeMatcher recommends songs from a small catalog based on a user's audio preferences. It takes in a user profile — including a favorite genre, mood, and numeric targets for energy, tempo, valence, danceability, and acousticness — and returns the top 5 most fitting songs.
+VibeMatcher recommends songs from a 100-song catalog based on a user's music preferences. Users can either describe what they want in plain language ("something chill and acoustic to study to") or fill out a profile directly with sliders in the web UI. The system returns the top 5 most fitting songs with a natural-language explanation.
 
-It assumes the user knows what kind of music they want and can describe it with numbers. This is a classroom simulation, not a production app.
+Under the hood, it uses a two-call RAG pipeline powered by Google Gemini 2.5 Flash: the first call extracts structured preferences from natural language; a scoring algorithm retrieves and ranks songs; the second call generates a warm, conversational recommendation grounded in the retrieved songs.
+
+This is a classroom simulation demonstrating how real AI products are built. It is not intended for production use.
 
 ---
 
@@ -44,13 +46,15 @@ Avoid code here. Pretend you are explaining the idea to a friend who does not pr
 
 **Response**
 
-Every song in the catalog gets a score from 0 to 1 (plus potential bonuses). The score is based on how close the song's audio features are to what the user wants.
+VibeMatcher uses a three-step pipeline:
 
-Five features are compared: energy, acousticness, valence (positivity), danceability, and tempo. Each one gets a proximity score — the closer the song is to the target, the higher the score. The five scores are then combined with different weights. Energy and acousticness each count for 25%, valence and danceability for 20% each, and tempo for 10%.
+**Step 1 — Preference Extraction (Gemini 2.5 Flash).** If you type a natural language request, Gemini reads it and converts it into a structured set of numbers: a favorite genre, a mood, and numeric targets for energy, acousticness, positivity (valence), danceability, and tempo. This is the only step that uses the LLM to understand meaning.
 
-On top of that, if a song's genre matches the user's favorite genre, it gets a +0.15 bonus. If the mood matches, it gets another +0.15. Songs are then ranked from highest to lowest score and the top 5 are returned.
+**Step 2 — Retrieval (Scoring Algorithm).** Every song in the 100-song catalog gets a score based on how closely its audio features match your preferences. Five features are weighted: energy and acousticness count for 25% each, valence and danceability for 20% each, and tempo for 10%. If a song's genre matches your target genre, it gets a flat +0.15 bonus; a mood match adds another +0.15. Songs are ranked highest to lowest and the top 5 are returned.
 
-The starter code only had a placeholder that returned the first 5 songs in the list. The actual scoring logic — weighted proximity, genre/mood bonuses, and ranking — was built from scratch.
+**Step 3 — Generation (Gemini 2.5 Flash).** Gemini receives your original request plus the top 5 ranked songs as context, and writes a warm, conversational recommendation explaining why the top picks fit what you asked for. It cannot change the ranking — it can only describe the results the algorithm already produced.
+
+Gemini does not influence, override, or rerank the scoring algorithm's output. The two LLM calls handle language understanding and language generation; everything in between is deterministic math.
 
 ---
 
@@ -67,11 +71,11 @@ Prompts:
 
 **Response**
 
-The catalog has 18 songs. It covers genres including pop, lofi, rock, ambient, jazz, synthwave, indie pop, classical, hip-hop, country, r&b, metal, folk, electronic, and blues.
+The catalog has 100 songs (expanded from 18 in the original project). It covers 15 genres: pop, lofi, rock, ambient, jazz, synthwave, indie pop, classical, hip-hop, country, r&b, metal, folk, electronic, and blues.
 
 Moods include happy, chill, intense, focused, melancholic, energetic, nostalgic, romantic, angry, sad, moody, and relaxed.
 
-No songs were added or removed from the original starter dataset. The catalog is tiny compared to a real music service. Many genres are missing entirely — no Latin, no K-pop, no reggae, no EDM subgenres. Most songs cluster in the mid-range for acoustic and energy values, so extreme preferences (very loud or very quiet) have few close matches.
+All songs are fictional and were created for this simulation. Because the catalog was written by hand, it reflects assumptions about what genres and moods typically sound like — which introduces bias. Many real-world genres are missing entirely (no Latin, no K-pop, no reggae, no EDM subgenres). Songs also cluster in the mid-range for energy and acousticness values, so users with extreme preferences (very high or very low energy) have fewer close matches.
 
 ---
 
@@ -87,9 +91,11 @@ Prompts:
 
 **Response**
 
-The system works best for users whose preferences match a clear genre or mood already in the catalog. The "Chill Lofi" profile consistently got low-energy, acoustic songs back, which felt correct. The "Deep Intense Rock" profile found the metal and rock songs reliably.
+The system works best for clear, genre-specific requests. Natural language queries like "something chill and acoustic to study to" correctly extract `genre=lofi, mood=chill, energy=0.30` and surface low-energy lofi songs (Soft Hours, Library Rain, Spacewalk Thoughts). Upbeat queries like "upbeat pop music for a morning run" correctly extract `genre=pop, mood=energetic, energy=0.90` and return high-energy pop tracks.
 
-The weighted numeric scoring does a decent job of separating songs when genre and mood bonuses do not apply. The "Ghost Genre & Mood" adversarial test showed the numeric scores alone still produce a sensible ranking — songs with similar energy and tempo to the target floated to the top.
+The weighted numeric scoring does a decent job of separating songs when genre and mood bonuses do not apply. The "Ghost Genre & Mood" adversarial test showed that numeric proximity alone still produces a sensible ranking even when no categorical bonuses fire.
+
+Gemini's natural language understanding is generally reliable for common descriptions. Vague queries ("something nice") produce reasonable mid-range preferences rather than crashing.
 
 ---
 
@@ -105,7 +111,10 @@ Prompts:
 - Ways the scoring might unintentionally favor some users  
 
 **Response**
-- Interestingly, using bonsus to give boosts to genre and mood matches can lead to poor recommendations. This is because a song is more likely to be recommended if it is of the same genre or mood, even if the tempo or desired energy level does not appropriately fit the user profile. It might be better to incorporate the bonuses into the weighted formula, or to create a pure point system. 
+- The flat +0.15 genre and mood bonuses are too powerful. A song with a matching genre but poor audio feature alignment can outscore a better overall match. This is a structural bias in the scoring formula — the bonuses should be scaled rather than flat.
+- Gemini's extracted preferences can vary slightly across runs for ambiguous queries. "Something chill" might map to `energy=0.30` in one run and `energy=0.38` in another, which changes which songs score highest even though the user's request was identical.
+- The `likes_acoustic` boolean in the user profile is captured but never used by the scoring algorithm — `score_song()` uses `target_acousticness` only. The flag is silently irrelevant.
+- The catalog is entirely fictional and reflects the creator's assumptions about genre/mood audio characteristics, which may not match what a real listener expects.
 
 ---
 
@@ -124,24 +133,35 @@ No need for numeric metrics unless you created some.
 
 **Response**
 
-Seven user profiles were tested in total: three normal personas and four adversarial edge cases.
+The full test suite has 25 tests (24 passing, 1 skipped).
 
-**Normal personas:**
+**Unit tests (`tests/test_recommender.py`, 7 tests)** — validated the scoring logic: correct sorting by score, non-empty explanations, score ranges, and genre match reasons.
 
-- **High-Energy Pop** — a listener who wants upbeat, danceable pop music with high tempo and positive valence, like a workout or city-drive playlist. Recommendations were checked to confirm they clustered around high-energy, happy songs.
-- **Chill Lofi** — a listener who prefers low-energy lofi beats for studying or winding down, with a preference for acoustic texture and slow tempo. Recommendations were checked for low-energy, mellow songs.
-- **Deep Intense Rock** — a listener who wants heavy, raw rock at high tempo and high energy but low valence (dark mood). Recommendations were checked to see whether the system could distinguish intense-but-sad from intense-but-happy.
+**AI reliability tests (`tests/test_ai_consistency.py`, 17 tests + 1 live)** — tested the guardrail layer using mocked Gemini responses:
+- Schema completeness: all 8 required keys must be present
+- Value range validation: floats in `[0, 1]`, tempo in `[60, 180]`
+- Guardrail clamping: out-of-range values are corrected, not rejected
+- Fallback behavior: unknown genres/moods fall back to safe defaults
+- Input edge cases: empty input and non-JSON responses raise clean `ValueError`s
+- Consistency: same mocked response always produces identical output
+- Live consistency test (skipped by default): real Gemini API, 3 runs of the same query, energy variance must stay below 0.3
 
-**Adversarial edge cases:**
+**Live output tests** — two natural language queries and one profile were run against the live system:
 
-- **High Energy + Sad** — conflicting signals: brutally high energy target paired with a sad folk mood preference. Sad songs tend to be low-energy, so the test examined whether the mood bonus (+0.15) could override a large energy-proximity penalty, potentially producing counterintuitive results.
-- **Impossible Tempo** — a target tempo of 300 BPM, far above any real song in the catalog and above the scorer's 200-BPM normalization ceiling. This tested whether the scoring formula could produce negative component scores without breaking the overall ranking logic.
-- **Ghost Genre & Mood** — favorite genre ("reggae") and mood ("euphoric") that do not exist in the catalog, so the categorical bonuses never fire. This isolated the numeric-proximity scoring and revealed how much the genre and mood bonuses normally shift rankings when they do match.
-- **Dead Center** — every numeric preference set to exactly 0.5 (the midpoint). Because all songs are equidistant from the target, this exposed whether any feature weight accidentally dominates and whether ties resolve arbitrarily or consistently.
-- **Contradictory Acoustic** — `likes_acoustic=True` but `target_acousticness=0.0`, a direct contradiction between the boolean flag and the numeric target. Since the scoring formula uses only `target_acousticness` for computation and ignores the boolean, this profile made the silent irrelevance of `likes_acoustic` visible in the output.
+*Query: "something chill and acoustic to study to"*
+Extracted: `genre=lofi, mood=chill, energy=0.30`
+Top picks: Soft Hours (Dusk Tape), Library Rain (Paper Lanterns), Spacewalk Thoughts (Orbit Bloom)
 
-**What suprised me?**
-The biggest surprise was that the top recommendations for each profile were almost always genre or mood matches (because of the bonuses). I would have preferred there be some variation with the dominant factor in the recommendation; for example, I think energy should probably play a larger role. 
+*Query: "upbeat pop music for a morning run"*
+Extracted: `genre=pop, mood=energetic, energy=0.90`
+Top picks: Summer Static (Coastal Line), Dancing in Neon (Prism Beat), Sunrise City (Neon Echo)
+
+*Profile: Chill Lofi* (`genre=lofi, mood=chill, energy=0.28, acousticness=0.72`)
+`#1 Midnight Coding — LoRoom (1.21)  #2 Soft Hours — Dusk Tape (1.20)  #3 Library Rain — Paper Lanterns (1.19)`
+Gemini: *"For that gentle, low-energy vibe, Midnight Coding by LoRoom would be a fantastic start — its subtle sounds are great for focus or just relaxing. You might also love Soft Hours by Dusk Tape, which truly embodies a peaceful atmosphere ideal for quiet moments."*
+
+**What surprised me?**
+The biggest surprise was how many distinct ways the AI layer could fail before adding the guardrail validator — missing keys, out-of-range floats, unknown genre/mood values, non-JSON text, and empty input each needed separate handling. Also, Gemini's preference extraction can vary slightly between runs for vague queries, which is why a live consistency test exists.
 
 
 ---
@@ -159,15 +179,15 @@ Prompts:
 
 **Response**
 
-The genre and mood bonuses feel too powerful. A better approach would be to fold them into the weighted formula as scaled scores instead of flat add-ons.
+The genre and mood bonuses feel too powerful. A better approach would be to fold them into the weighted formula as scaled scores instead of flat add-ons, so they can't overwhelm a better overall audio match.
 
-The catalog is too small. Adding hundreds of songs would make the numeric scoring much more meaningful, since right now there are very few songs competing in each genre.
+The catalog is still small at 100 songs. Adding hundreds more per genre would make numeric scoring much more meaningful — right now some genres have only a handful of songs competing.
 
 The `likes_acoustic` boolean is never used in scoring — it should either be removed or wired into the acousticness weight.
 
-A diversity filter would help. Right now the top 5 songs can all come from the same genre. Forcing at least 2-3 different genres in the results would make the recommendations feel more interesting.
+A diversity filter would help. Right now the top 5 results can all come from the same artist or genre. Forcing representation across at least 2–3 genres would make recommendations feel less repetitive.
 
-Explanations could also be improved. Saying "audio features score: 0.74, genre match (+0.15)" is accurate but not very friendly. A plain-English explanation like "matches your energy level and genre preference" would feel better to a real user.
+For natural language mode, adding a confidence indicator — something like "I'm not sure what genre fits this, defaulting to pop" — would make the system more transparent when Gemini's extraction is uncertain.
 
 ---
 

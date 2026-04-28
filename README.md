@@ -2,7 +2,7 @@
 
 ## Original Project (Modules 1–3)
 
-This project started as **VibeMatcher 1.0**, a rules-based music recommender simulation built during Modules 1–3. Its original goal was to demonstrate how recommendation systems work by scoring 18 songs against a user's hardcoded taste profile — matching on audio features like energy, tempo, and acousticness using a weighted proximity formula. It could rank songs and generate basic scoring explanations, but every user profile was a fixed Python dictionary and the "AI" was just math — no language model, no natural language input, no dynamic behavior.
+This project started as **VibeMatcher 1.0**, a rules-based music recommender simulation. Its original goal was to demonstrate how recommendation systems work by scoring 18 songs against a user's hardcoded taste profile — matching on audio features like energy, tempo, and acousticness using a weighted proximity formula. It could rank songs and generate basic scoring explanations, but every user profile was a fixed Python dictionary and the "AI" was just math — no language model, no natural language input, no dynamic behavior.
 
 ---
 
@@ -155,79 +155,60 @@ pytest tests/test_ai_consistency.py --live    # live Gemini API consistency chec
 
 ## Sample Interactions
 
-The scoring algorithm output shown below is exact. The Gemini-generated recommendations are representative of what the system produces.
+Examples 1 and 2 use the natural-language CLI (`--query`). Example 3 uses the hardcoded profile mode. All outputs are captured directly from the running system.
 
 ---
 
-### Example 1 — Study Music
+### Example 1 — Study Music (natural language)
 
 **Input:** `"something chill and acoustic to study to"`
 
-**Extracted preferences:**
-```
-genre=lofi  mood=chill  energy=0.28  tempo=75 BPM
-valence=0.55  danceability=0.48  acousticness=0.80
-```
-
-**Songs retrieved by scoring algorithm:**
-```
-#1  Soft Hours         — Dusk Tape        (score=1.25)
-#2  Library Rain       — Paper Lanterns   (score=1.24)
-#3  Midnight Coding    — LoRoom           (score=1.21)
-#4  Rainy Afternoon    — LoRoom           (score=1.12)
-#5  Warm Light         — Paper Lanterns   (score=1.10)
-```
+**Extracted by Gemini:** `genre=lofi  mood=chill  energy=0.30`
 
 **AI-generated recommendation:**
-> It sounds like you're looking for some gentle background music to help you focus without distraction. I'd start with **Soft Hours by Dusk Tape** — it has a warm, unhurried feel that's perfect for settling into a study session. **Library Rain by Paper Lanterns** is another great pick, with a soft, slightly nostalgic texture that keeps things calm without putting you to sleep. If you want something with just a bit more life to it, **Midnight Coding by LoRoom** has that cozy late-night energy that makes long study sessions feel manageable.
+> I've got some wonderfully chill tunes perfect for studying to, just what you asked for! For that peaceful, focused atmosphere, I'd highly recommend **Soft Hours by Dusk Tape**, which has a lovely gentle lofi feel that's great for background listening. You might also like **Library Rain by Paper Lanterns** for a similar calming vibe. And if you prefer something a bit more atmospheric and dreamlike to help you concentrate, **Spacewalk Thoughts by Orbit Bloom** would be a fantastic choice.
 
 ---
 
-### Example 2 — Workout Music
+### Example 2 — Morning Run (natural language)
 
-**Input:** `"I need high energy intense music for lifting weights"`
+**Input:** `"upbeat pop music for a morning run"`
 
-**Extracted preferences:**
-```
-genre=rock  mood=intense  energy=0.90  tempo=145 BPM
-valence=0.42  danceability=0.60  acousticness=0.08
-```
-
-**Songs retrieved by scoring algorithm:**
-```
-#1  Storm Runner          — Voltline          (score=1.26)
-#2  Blue Collar Anthem    — Working Crew      (score=1.24)
-#3  Concrete Wings        — Voltline          (score=1.10)
-#4  Dark Signal           — Iron Circuit      (score=1.09)
-#5  Aftershock            — Red Fault         (score=1.09)
-```
+**Extracted by Gemini:** `genre=pop  mood=energetic  energy=0.90`
 
 **AI-generated recommendation:**
-> Time to push your limits! **Storm Runner by Voltline** is the obvious opener — it hits hard right from the start with the kind of raw, driving energy that makes you want to move more weight. **Blue Collar Anthem by Working Crew** pairs well if you want something with a bit more grit and attitude, perfect for the middle of a tough set. And when you need a final push, **Aftershock by Red Fault** delivers exactly what the name promises — an aggressive surge that'll carry you through the last rep.
+> Ready to energize your morning run with some fantastic upbeat pop! I've picked out a few tracks that should get you moving and grooving.
+>
+> First up, try **Summer Static by Coastal Line** — it's super energetic and has that perfect summery vibe to power your run. You might also love **Dancing in Neon by Prism Beat** and **Sunrise City by Neon Echo**, both of which are wonderfully happy and uplifting, making them ideal for an upbeat workout. Enjoy your run!
 
 ---
 
-### Example 3 — Late Night Drive
+### Example 3 — Chill Lofi (hardcoded profile)
 
-**Input:** `"moody synthwave for a late night drive"`
+**Profile:** `genre=lofi  mood=chill  energy=0.28  tempo=78 BPM  acousticness=0.72`
 
-**Extracted preferences:**
+**Scored results:**
 ```
-genre=synthwave  mood=moody  energy=0.74  tempo=112 BPM
-valence=0.45  danceability=0.76  acousticness=0.12
-```
+#1  Midnight Coding  —  LoRoom           Score: 1.21
+    audio features score: 0.91  |  genre match (+0.15)  |  mood match (+0.15)
 
-**Songs retrieved by scoring algorithm:**
-```
-#1  Digital Rain     — Binary Pulse      (score=1.28)
-#2  Night Drive Loop — Neon Echo         (score=1.26)
-#3  Night Moves      — Dark Circuit      (score=1.11)
-#4  Heartbeats       — Echo Shore        (score=1.09)
-#5  Retro Signal     — Volt City         (score=1.07)
+#2  Soft Hours       —  Dusk Tape        Score: 1.20
+    audio features score: 0.90  |  genre match (+0.15)  |  mood match (+0.15)
+
+#3  Library Rain     —  Paper Lanterns   Score: 1.19
+    audio features score: 0.89  |  genre match (+0.15)  |  mood match (+0.15)
+
+#4  Gray Afternoon   —  Dusk Tape        Score: 1.08
+    audio features score: 0.93  |  genre match (+0.15)
+
+#5  Rainy Afternoon  —  LoRoom           Score: 1.07
+    audio features score: 0.92  |  genre match (+0.15)
 ```
 
 **AI-generated recommendation:**
-> For a late-night drive with some atmospheric edge, you're in the right place. **Night Drive Loop by Neon Echo** is practically made for this — that slow-building synthwave pulse feels exactly like watching city lights blur past at 2am. **Digital Rain by Binary Pulse** adds a darker, more mysterious layer if you want to lean into the mood, with a rhythm that matches the hum of the highway. Round it out with **Retro Signal by Volt City** for a touch of nostalgia that feels like a drive through a city that never quite existed.
+> I've got just the thing for your chill lofi needs, perfect for studying or winding down!
+>
+> For that gentle, low-energy vibe, I think **Midnight Coding by LoRoom** would be a fantastic start — its subtle sounds are great for focus or just relaxing. You might also love **Soft Hours by Dusk Tape**, which truly embodies a peaceful atmosphere ideal for quiet moments. And if you're looking for something serene, **Library Rain by Paper Lanterns** perfectly captures that tranquil, reflective mood you described. Enjoy your calming listening!
 
 ---
 
@@ -252,7 +233,7 @@ The original 18-song catalog was too small for meaningful retrieval — almost a
 | Flat genre/mood bonuses (+0.15) | Simple and transparent, but can let a matching genre outscore a better overall audio match |
 | Gemini for preference extraction | Human-readable and flexible, but adds latency and can be slightly inconsistent across runs |
 | Scored retrieval over embeddings | More explainable and testable, but can't capture semantic similarity (e.g., "jazz" and "blues" scored separately even when both match a vibe) |
-| `google-genai` SDK | Current, supported SDK — but free tier quota is limited for high-volume use |
+| `google-genai` SDK + `gemini-2.5-flash` | Current, supported SDK — but free tier quota is limited for high-volume use |
 
 ---
 
@@ -273,7 +254,7 @@ The original 18-song catalog was too small for meaningful retrieval — almost a
 
 ```
 pytest tests/ -v
-# Result: 19 passed, 1 skipped (live test)
+# Result: 24 passed, 1 skipped (live test)
 ```
 
 ### What worked well
@@ -297,8 +278,26 @@ Writing tests before seeing real Gemini output forced us to think clearly about 
 
 ## Reflection
 
-Building VibeMatcher taught me that AI systems are not a single model — they're pipelines where each component needs to be individually reliable. The scoring algorithm is simple enough to reason about and test directly. The Gemini calls are powerful but non-deterministic, which is why the guardrail layer exists: it translates Gemini's flexibility into something the downstream code can trust.
+I really enjoyed making this project — it let me integrate several things we learned such as how to use Streamlit, apply RAG, and using Mermaid.js to plan and visualize the system design. But building it also pushed me to think beyond just "does it work?" to "is it responsible?"
 
-The biggest shift in thinking was moving from "I'll just ask Gemini to do everything" to understanding *why* RAG is more robust. When retrieval is separate from generation, you can log what was retrieved, test that step independently, and swap out the retrieval strategy without changing the generation. That architectural clarity — knowing which part of your system does what — is what makes AI products maintainable rather than magical black boxes.
+**Limitations and biases.** The catalog is entirely fictional and manually created, which means it reflects my own assumptions about what genres and moods sound like. The flat +0.15 genre and mood bonuses in the scoring formula can let a weaker song with a matching genre outscore a better overall audio match — a structural bias baked into the weights. Gemini's preference extraction also carries whatever biases exist in its training data: if someone describes a cultural style of music that isn't well-represented in Western music datasets, the extracted features will likely map it to the closest Western equivalent rather than representing it accurately.
 
-From a bias and fairness perspective: the catalog reflects whatever preferences went into designing the 100 songs. Genres like K-pop, Latin, Afrobeats, and dozens of others aren't represented, which means the system can't serve users with those tastes well — even if Gemini perfectly extracts their preferences, the retrieval step would fall back to a poor approximation. Real recommenders face this same problem at scale, and it's a reminder that the data you retrieve from shapes the quality of what you generate.
+**Misuse.** A music recommender seems low-stakes, but the same RAG pattern applies to higher-risk domains. In this system, a user could craft a query designed to extract the system prompt or manipulate Gemini's structured output — prompt injection is a real concern whenever user text goes directly into an LLM call. The guardrail layer partially addresses this by validating and clamping Gemini's output before it touches the scoring algorithm, so even a malicious or garbled response can't crash the system or produce nonsense results. A more hardened version would also sanitize the input before passing it to Gemini in the first place.
+
+**Surprises during reliability testing.** The biggest surprise was how many distinct failure modes appeared once I actually tried to break the system. Before writing tests, I assumed Gemini would either return valid JSON or clearly fail — but in practice there were five separate ways it could produce bad output (missing keys, out-of-range floats, unknown genre/mood values, non-JSON text, and empty input), each of which needed its own handling. I also didn't expect the live consistency test to matter much, but it exposed that "something chill" could map to `energy=0.30` in one run and `energy=0.38` in another — a small difference that meaningfully changes which songs score highest.
+
+**Collaboration with AI.** I used Claude throughout the project for both design and implementation. One instance where AI gave a genuinely helpful suggestion: when I was designing the two-call pipeline, Claude pointed out that separating preference extraction from response generation would make each step independently testable — which turned out to be exactly right, since I could mock Gemini's output in tests without needing a real API key. One instance where AI was wrong: early on, Claude suggested using a single Gemini call to handle both preference extraction and song recommendation together. That would have bypassed the scoring algorithm entirely and made the system untestable and opaque. I pushed back and kept the two-stage design, which was the better call.
+
+---
+
+## What Changed from the Original
+
+| | Original (Modules 1–3) | Current version |
+|---|---|---|
+| **Input** | Hardcoded Python profile dicts only | Natural language queries + hardcoded profiles |
+| **AI** | None — scoring math only | Two Gemini calls (preference extraction + response generation) |
+| **Output** | Ranked list with score breakdowns | Ranked list + conversational natural-language recommendation |
+| **Catalog** | 18 songs | 100 songs |
+| **Interface** | CLI only | CLI + Streamlit web UI |
+| **Guardrails** | None | Validator clamps out-of-range values and rejects bad AI output |
+| **Tests** | Basic unit tests (scoring, sorting) | Unit tests + 17 AI reliability tests + live consistency check |

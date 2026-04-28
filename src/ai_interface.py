@@ -21,7 +21,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL_NAME = "gemini-2.0-flash"
+MODEL_NAME = "gemini-2.5-flash"
 
 VALID_GENRES = {
     "pop", "lofi", "rock", "jazz", "ambient", "synthwave",

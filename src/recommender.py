@@ -66,8 +66,13 @@ class Recommender:
         Returns:
             A list of up to k Song objects ranked by match quality.
         """
-        # TODO: Implement recommendation logic
-        return self.songs[:k]
+        user_dict = _profile_to_dict(user)
+        scored = [
+            (song, score_song(user_dict, _song_to_dict(song))[0])
+            for song in self.songs
+        ]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [song for song, _ in scored[:k]]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
         """
@@ -80,8 +85,45 @@ class Recommender:
         Returns:
             A string describing the factors that contributed to the recommendation.
         """
-        # TODO: Implement explanation logic
-        return "Explanation placeholder"
+        _, reasons = score_song(_profile_to_dict(user), _song_to_dict(song))
+        return ", ".join(reasons)
+
+def _profile_to_dict(user: "UserProfile") -> Dict:
+    return {
+        "favorite_genre":      user.favorite_genre,
+        "favorite_mood":       user.favorite_mood,
+        "target_energy":       user.target_energy,
+        "target_acousticness": 0.8 if user.likes_acoustic else 0.3,
+        "target_valence":      0.5,
+        "target_danceability": 0.5,
+        "target_tempo_bpm":    100.0,
+    }
+
+
+def _song_to_dict(song: "Song") -> Dict:
+    return {
+        "genre":        song.genre,
+        "mood":         song.mood,
+        "energy":       song.energy,
+        "acousticness": song.acousticness,
+        "valence":      song.valence,
+        "danceability": song.danceability,
+        "tempo_bpm":    song.tempo_bpm,
+    }
+
+
+_MAX_SCORE = 1.0 + 0.15 + 0.15  # numeric ceiling + genre bonus + mood bonus
+
+
+def confidence_score(raw_score: float) -> float:
+    """
+    Normalize a raw score to [0.0, 1.0] as a match-confidence percentage.
+
+    0.0 = worst possible match, 1.0 = perfect match on every feature plus
+    both categorical bonuses.
+    """
+    return min(1.0, max(0.0, raw_score / _MAX_SCORE))
+
 
 WEIGHTS = {
     "energy":        0.25,

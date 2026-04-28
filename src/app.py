@@ -169,6 +169,17 @@ if run_nl and query.strip():
         except ValueError as e:
             st.error(f"Could not understand your request: {e}")
             st.stop()
+        except Exception as e:
+            msg = str(e)
+            if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
+                st.error(
+                    "**Gemini API quota exceeded.** The free tier daily limit has been reached. "
+                    "Wait until tomorrow for the quota to reset, or add billing at "
+                    "[Google AI Studio](https://aistudio.google.com/apikey)."
+                )
+            else:
+                st.error(f"Gemini API error: {e}")
+            st.stop()
 
 elif run_prof:
     top_k = top_k_prof

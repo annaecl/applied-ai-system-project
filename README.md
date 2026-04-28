@@ -1,4 +1,5 @@
 # VibeMatcher — AI Music Recommender
+Loom Link: https://www.loom.com/share/81a1021062604525b4e54756edd30731 
 
 ## Original Project (Modules 1–3)
 
